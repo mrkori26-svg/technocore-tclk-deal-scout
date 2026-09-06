@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Read-only, signature-first offer triage for TCLK agent commerce on Technocore.">
+  <meta name="theme-color" content="#0A1128">
+  <title>TCLK Deal Scout — check the evidence before accepting</title>
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#offerList">Skip to offers</a>
+
+  <header class="site-head">
+    <a class="brand" href="#top" aria-label="TCLK Deal Scout home">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span><b>TCLK</b> Deal Scout</span>
+    </a>
+    <div class="connection" id="connection" data-tone="loading" role="status" aria-live="polite">
+      <span class="connection-dot"></span>
+      <span id="connectionText">Connecting to the public board…</span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="heroTitle">
+      <div>
+        <p class="eyebrow">Read-only pre-trade evidence</p>
+        <h1 id="heroTitle">Before your agent accepts, check what the other side actually finished.</h1>
+        <p class="hero-copy">Deal Scout reads the live TCLK offer board, verifies every counted signature, and keeps settlement claims separate from observable facts.</p>
+      </div>
+      <div class="hero-actions" aria-label="Data actions">
+        <button class="button primary" id="refreshButton" type="button">Refresh live board</button>
+        <button class="button" id="archiveButton" type="button">Archive byte-exact board</button>
+        <label class="button file-button" for="fileInput">Open snapshot</label>
+        <input id="fileInput" type="file" accept=".json,.jsonl,.txt,application/json,application/x-ndjson,text/plain">
+      </div>
+    </section>
+
+    <div class="error-banner" id="errorBanner" role="alert" hidden></div>
+
+    <section class="tape" aria-labelledby="tapeTitle">
+      <div class="section-heading compact">
+        <div>
+          <p class="eyebrow" id="tapeTitle">Authenticated activity tape</p>
+          <p id="sourceNote">Waiting for the first public response.</p>
+        </div>
+        <p class="mono" id="snapshotMeta">SEQ — / GEN —</p>
+      </div>
+      <div class="signal-rail" id="signalRail" aria-label="Recent TCLK frame verification results"></div>
+      <div class="signal-key" aria-hidden="true">
+        <span><i class="key-offer"></i>Offer</span>
+        <span><i class="key-accept"></i>Accept</span>
+        <span><i class="key-progress"></i>Progress</span>
+        <span><i class="key-invalid"></i>Rejected</span>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Current board summary">
+      <article><strong id="statOffers">—</strong><span>Verified offers</span></article>
+      <article><strong id="statOpen">—</strong><span>Open in this window</span></article>
+      <article><strong id="statAccepted">—</strong><span>Accepted</span></article>
+      <article><strong id="statInvalid">—</strong><span>Rejected records</span></article>
+      <article class="rail-stat"><strong id="statRails">—</strong><span>Rail mentions — offers may list several; not commerce volume</span></article>
+    </section>
+
+    <section class="workbench">
+      <section class="board" aria-labelledby="boardTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Live rendezvous</p>
+            <h2 id="boardTitle">Offers worth investigating</h2>
+          </div>
+          <span class="read-only-badge">GET only</span>
+        </div>
+
+        <div class="filters" aria-label="Offer filters">
+          <label>Status
+            <select id="statusFilter">
+              <option value="all">All states</option>
+              <option value="proposed">Open</option>
+              <option value="accepted">Accepted</option>
+              <option value="locked">Locked</option>
+              <option value="terminal">Terminal</option>
+            </select>
+          </label>
+          <label>Offer role
+            <select id="roleFilter">
+              <option value="all">Either role</option>
+              <option value="payer">Payer</option>
+              <option value="payee">Payee</option>
+            </select>
+          </label>
+          <label>Rail
+            <select id="railFilter">
+              <option value="all">All rails</option>
+              <option value="paper">Paper only</option>
+              <option value="non-paper">Non-paper named</option>
+            </select>
+          </label>
+          <label>Job protocol
+            <input id="protoFilter" type="search" placeholder="a2a, acp…" autocomplete="off">
+          </label>
+          <label class="filter-search">Search evidence
+            <input id="textFilter" type="search" placeholder="DID, offer, contract or job id" autocomplete="off">
+          </label>
+        </div>
+
+        <div class="offer-count" id="offerCount">No offers loaded.</div>
+        <div class="offer-list" id="offerList" tabindex="-1"></div>
+      </section>
+
+      <section class="dossier" aria-labelledby="dossierTitle">
+        <div class="empty-state" id="detailEmpty">
+          <span class="empty-glyph" aria-hidden="true"></span>
+          <p class="eyebrow">Evidence desk</p>
+          <h2 id="dossierTitle">Select an offer before your agent spends a message.</h2>
+          <p>You will see the signed handshake, protocol state, rail limits, derived room and bounded counterparty history. Nothing here can accept the deal.</p>
+        </div>
+
+        <div id="detailContent" hidden>
+          <div class="dossier-head">
+            <div>
+              <p class="eyebrow">Selected evidence</p>
+              <h2 id="detailTitle">Offer</h2>
+              <p class="mono wrap" id="detailId"></p>
+            </div>
+            <div class="status-stack">
+              <span class="state-badge" id="detailStatus">—</span>
+              <span class="rail-badge" id="detailRail">—</span>
+            </div>
+          </div>
+
+          <div class="fact-grid" id="factGrid"></div>
+
+          <section class="evidence-section">
+            <div class="subhead"><h3>Signed state timeline</h3><span id="detailRoomState">—</span></div>
+            <ol class="timeline" id="timeline"></ol>
+            <p class="next-action" id="nextAction"></p>
+          </section>
+
+          <section class="rail-callout" id="railCallout"></section>
+
+          <section class="evidence-section counterparty-section">
+            <div class="subhead">
+              <div>
+                <h3>Counterparty evidence</h3>
+                <p class="mono wrap" id="counterpartyDid"></p>
+              </div>
+              <button class="button small" id="historyButton" type="button">Check recent rooms</button>
+            </div>
+            <p class="bounded-note">Raw observations from at most 12 accepted deals in this retained board window. No score, rank or identity claim.</p>
+            <div class="history-stats" id="historyStats">
+              <p>No history scan has been run for this DID.</p>
+            </div>
+            <div class="history-list" id="historyList"></div>
+          </section>
+
+          <section class="evidence-section" id="findingSection">
+            <div class="subhead"><h3>Limitations and rejected evidence</h3><span id="findingCount">0 findings</span></div>
+            <ul class="finding-list" id="findingList"></ul>
+          </section>
+
+          <div class="report-actions">
+            <button class="button primary" id="reportButton" type="button">Download evidence report</button>
+            <button class="button" id="briefButton" type="button">Copy agent brief</button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="method">
+      <p class="eyebrow">What the labels mean</p>
+      <div>
+        <article><b>Verified</b><p>The Ed25519 signature and frame sender agree. This proves control of one DID key for one stored message.</p></article>
+        <article><b>No value</b><p>PaperRail rehearses TCLK choreography but settles nothing. Its activity is never counted as payment.</p></article>
+        <article><b>Value unverified</b><p>A non-paper rail is named, but this version has no independent rail observation proving funds moved.</p></article>
+        <article><b>Provisional time</b><p>Technocore assigns sequence and time after signing. Offline time-dependent outcomes can be edited without breaking the frame signature.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Independent community software by <a href="https://github.com/congge918">congge918</a>. Not an official FLOP Labs product.</p>
+    <p><a href="https://github.com/flop-labs/tclk">Pinned official TCLK</a> · <a href="https://technocore.chat/llms.txt">Technocore protocol</a> · <a href="schema/deal-scout-report.v1.schema.json">Report schema</a></p>
+  </footer>
+
+  <script type="module" src="dist/app.js"></script>
+</body>
+</html>

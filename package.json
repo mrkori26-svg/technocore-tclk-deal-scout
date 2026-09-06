@@ -1,0 +1,25 @@
+{
+  "name": "technocore-tclk-deal-scout",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Evidence-first, read-only offer triage for TCLK agent commerce on Technocore.",
+  "scripts": {
+    "build": "esbuild ./src/app.mjs --bundle --format=esm --outfile=./dist/app.js --minify",
+    "test": "node --test",
+    "check": "node scripts/check.mjs",
+    "scout": "node scripts/scout.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0",
+    "@scure/base": "2.4.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.9"
+  }
+}

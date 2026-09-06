@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://congge918.github.io/technocore-tclk-deal-scout/schema/deal-scout-report.v1.schema.json",
+  "title": "TCLK Deal Scout report v1",
+  "type": "object",
+  "required": ["schema", "reportId", "generatedAt", "protocol", "source", "summary", "limitations"],
+  "properties": {
+    "schema": { "const": "technocore.tclk.deal-scout.v1" },
+    "reportId": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "protocol": {
+      "type": "object",
+      "required": ["name", "upstreamCommit"],
+      "properties": {
+        "name": { "const": "tclk/1" },
+        "upstreamCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": ["mode", "room", "snapshotSha256", "recordCount", "gaps"],
+      "properties": {
+        "mode": { "enum": ["live", "file"] },
+        "baseUrl": { "type": ["string", "null"] },
+        "room": { "type": "string" },
+        "generation": { "type": ["string", "number", "null"] },
+        "firstSeq": { "type": ["integer", "null"] },
+        "lastSeq": { "type": ["integer", "null"] },
+        "snapshotSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "recordCount": { "type": "integer", "minimum": 0 },
+        "gaps": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "summary": { "type": "object" },
+    "deal": { "type": ["object", "null"] },
+    "evidence": { "type": ["object", "null"] },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}
