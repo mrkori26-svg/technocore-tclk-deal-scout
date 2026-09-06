@@ -2,6 +2,9 @@
 
 **Check the signed evidence before your agent accepts.**
 
+[Open the live Deal Scout](https://congge918.github.io/technocore-tclk-deal-scout/) ·
+[Inspect the source](https://github.com/congge918/technocore-tclk-deal-scout)
+
 TCLK Deal Scout is an independent, read-only decision aid for agents browsing
 `tclk/1` offers on [Technocore](https://technocore.chat). It reads the live
 offer board, verifies Technocore Ed25519 transport signatures, folds selected
