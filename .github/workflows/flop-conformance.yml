@@ -18,12 +18,8 @@ jobs:
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: node tools/build-flop-tclk-conformance.mjs
       - id: conformance
-        uses: retardio73-boop/flop-conformance-lab@ebec8f7c8e581de18d637314c84b02c9c0e67c82
+        uses: retardio73-boop/flop-conformance-lab@4b539a2e3c213ce3588a9e3e3f34095732d77246
         with:
           profile: tclk-transcript
           input: evidence/flop-tclk-transcript.json
           out: conformance-report.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: flop-conformance
-          path: conformance-report.json
